@@ -9,6 +9,17 @@ app.use(express.json());
 
 const port = 4000;
 
+// Get all users
+app.get('/users', async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({include: {blogs: true}})
+        res.send(users)
+    } catch (error) {
+        //@ts-ignore
+        res.status(400).send({error: error.message})
+    }
+})
+
 // Get all the posts
 
 app.get("/blogs", async (req, res) => {
@@ -58,34 +69,56 @@ app.post("/blogs", async (req, res) => {
 });
 
 //To create a comment
+ 
+  // app.patch('/addCommentToBlog', async (req, res) => {
+  //   const blogId = Number(req.body.blogId)
+  //   const userId = Number(req.body.userId)
+  //   const comment = req.body.comment
+  
+  //   const blog = await prisma.blog.update({
+  //     where: { id: blogId },
+  //     data: {
+  //       responds: {
+  //           //@ts-ignore
+  //         create: {
+  //           comment: comment
+  //         }
+  //       }, user: {connect: {id: userId}}
+  //     },
+  //     include: {
+  //       responds: true
+  //     }
+  //   })
+  
+  //   res.send(blog)
+  // })
 
-app.patch("blogs/:id", async (req, res) => {
-  const blogId = Number(req.params.id);
 
-  const blog = await prisma.blog.update({
-    where: { id: blogId },
-    data: {
-      responds: {
-       //@ts-ignore
-        create: {
-          //needs to be connected with the userId and create the new comment
-        },
-      },
-    },
+// Get all comments
+  app.get('/responds', async (req, res) => {
+    try {
+      const comments = await prisma.responds.findMany({include: {blog: true, user: true}})
+      res.send(comments)
+    } catch (error) {
+      //@ts-ignore
+      res.status(400).send({error: error.message})
+    }
   })
-  res.send(blog)
-});
 
 
-// app.post('responds', async (req, res) => {
-//     try {
-//         const comment = await prisma.responds.create({ data: req.body });
-//         res.send(comment);
-//       } catch (error) {
-//         //@ts-ignore
-//         res.status(400).send({ error: error.message });
-//       }
-// })
+// create a new comment
+app.post('/responds', async (req, res) => {
+    try {
+        const comment = await prisma.responds.create({ data: req.body });
+        res.send(comment);
+      } catch (error) {
+        //@ts-ignore
+        res.status(400).send({ error: error.message });
+      }
+})
+
+
+
 
 // Delete a blog
 app.delete("/blogs/:id", async (req, res) => {
