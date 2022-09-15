@@ -20,6 +20,19 @@ app.get('/users', async (req, res) => {
     }
 })
 
+
+//get the current user
+app.get('/users/:id', async (req, res) => {
+  try {
+    const userId = Number(req.params.id)
+    const user = await prisma.user.findUnique({where: {id: userId}, include: {blogs: true}})
+res.send(user)
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({error: error.message})
+  }
+})
+
 // Get all the posts
 
 app.get("/blogs", async (req, res) => {
@@ -67,6 +80,7 @@ app.post("/blogs", async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 });
+
 
 //To create a comment
  
