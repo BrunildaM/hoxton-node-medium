@@ -24,9 +24,9 @@ model User {
 
 model followThing {
   follower    User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  followerId  Int @default(1)
+  followerId  Int  @default(1)
   following   User @relation("following", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  followingId Int @default(2)
+  followingId Int  @default(2)
 
   @@id([followerId, followingId])
 }
@@ -45,6 +45,7 @@ model Likes {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   blog   Blog @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  liked  Int  @default(0)
   userId Int
   blogId Int
 }
